@@ -22,15 +22,16 @@ fs.readdirSync(originPath).forEach((_) => {
     let description = item[i].description;
     if (/^el/.test(prefix)) {
       prefix = prefix.replace(/^el/, '');
-      if (reservedNames.some((_) => _.test(prefix))) {
-        prefix = prefix + '_';
+      let fileName = prefix;
+      if (reservedNames.some((_) => _.test(fileName))) {
+        fileName = fileName + '_';
       }
       if (prefixs.includes(prefix)) {
         console.log('有重复的prefix', prefix);
       } else {
         prefixs.push(prefix);
         fs.writeFileSync(
-          path.join(snippetsPath, prefix + '.md'),
+          path.join(snippetsPath, fileName + '.md'),
           `## ${prefix}
 #### ${i}
 ${description}
