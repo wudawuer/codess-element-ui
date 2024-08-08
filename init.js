@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const reservedNames = [/^CON$/i, /^PRN$/i, /^AUX$/i, /^NUL$/i];
+
 const snippetsPath = path.join(__dirname, './snippets');
 fs.readdirSync(snippetsPath).forEach((_) => {
   fs.rmSync(path.join(snippetsPath, _));
@@ -16,6 +18,9 @@ fs.readdirSync(originPath).forEach((_) => {
     let description = item[i].description;
     if (/^el/.test(prefix)) {
       prefix = prefix.replace(/^el/, '');
+      if (reservedNames.some((_) => _.test(prefix))) {
+        prefix = prefix + '_';
+      }
       if (prefixs.includes(prefix)) {
         console.log('有重复的prefix', prefix);
       } else {
