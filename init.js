@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const nReg = /^el/;
+
 /**
  * Windows 系统中的保留设备名称，不能用作文件或文件夹的名称
  * TODO
@@ -20,28 +22,27 @@ fs.readdirSync(originPath).forEach((_) => {
     let prefix = item[i].prefix;
     let body = item[i].body;
     let description = item[i].description;
-    if (/^el/.test(prefix)) {
-      prefix = prefix.replace(/^el/, '');
-      let fileName = prefix;
-      if (reservedNames.some((_) => _.test(fileName))) {
-        fileName = fileName + '_';
-      }
-      if (prefixs.includes(prefix)) {
-        console.log('有重复的prefix', prefix);
-      } else {
-        prefixs.push(prefix);
-        fs.writeFileSync(
-          path.join(snippetsPath, fileName + '.md'),
-          `## ${prefix}
+    if (!nReg.test(prefix)) {
+      console.log(`有特殊触发词`, prefix);
+    }
+    prefix = prefix.replace(nReg, '');
+    let fileName = prefix;
+    if (reservedNames.some((_) => _.test(fileName))) {
+      fileName = fileName + '_';
+    }
+    if (prefixs.includes(prefix)) {
+      console.log('有重复的prefix', prefix);
+    } else {
+      prefixs.push(prefix);
+      fs.writeFileSync(
+        path.join(snippetsPath, fileName + '.md'),
+        `## ${prefix}
 #### ${i}
 ${description}
 \`\`\`
 ${body.join('\n')}
 \`\`\``,
-        );
-      }
-    } else {
-      console.log('有不已el开头的prefix', prefix);
+      );
     }
   }
 });
